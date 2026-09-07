@@ -580,8 +580,8 @@
 
     <script>
         // Supabase Initialization
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://lwthgqdjzvjnosepaosp.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable__UPi1hFfHWXyt0kOaKveGA_XHpearw7';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
@@ -695,24 +695,18 @@
                 return;
             }
 
-            // Find user profile by mobile number
-            const { data: profiles, error: findError } = await _supabase
+            const { data: profile, error: findError } = await _supabase
                 .from('profiles')
                 .select('id')
                 .eq('mobile', mobile)
                 .single();
 
-            if (findError || !profiles) {
+            if (findError || !profile) {
                 showCustomPopup('Error', 'Mobile number not found in our records.');
                 return;
             }
 
-            // Update user password/mpin via Supabase Admin / Recovery flow (or direct sign-in update simulation)
-            const email = `${mobile}@groma.app`;
-            
-            // Note: For direct password update via client without email verification link, 
-            // the user must either use password recovery or an authenticated session.
-            showCustomPopup('Info', 'To change your MPIN securely, please contact support or use the reset link sent to your registered channel.');
+            showCustomPopup('Info', 'To change your MPIN securely, please contact support or use the password recovery flow.');
         }
 
         async function fetchUserProfile(userId) {
