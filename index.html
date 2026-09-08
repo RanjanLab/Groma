@@ -637,7 +637,9 @@
             }
 
             const email = `${tempRegData.mobile}@groma.app`;
-            const { data, error } = await _supabase.auth.signUp({ email, password: mpin });
+            // Supabase requires at least 6 characters for password, so padding the 4-digit MPIN to 6 chars
+            const securePassword = mpin + "00"; 
+            const { data, error } = await _supabase.auth.signUp({ email, password: securePassword });
 
             if (error) {
                 showCustomPopup('Error', error.message);
@@ -674,7 +676,9 @@
             }
 
             const email = `${mobile}@groma.app`;
-            const { data, error } = await _supabase.auth.signInWithPassword({ email, password: mpin });
+            // Padding the 4-digit MPIN to match the 6-character length used during signup
+            const securePassword = mpin + "00";
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password: securePassword });
 
             if (error) {
                 showCustomPopup('Login Failed', 'Invalid mobile number or MPIN.');
