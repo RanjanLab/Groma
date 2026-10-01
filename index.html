@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMI Tracker Pro</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>EMI Tracker</title>
     <style>
         /* Bright & Clear Theme Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #f8fafc; color: #0f172a; -webkit-tap-highlight-color: transparent; }
         
-        /* App Header */
-        header { background: #1e3a8a; color: #ffffff; padding: 0 20px; font-size: 1.3rem; font-weight: 700; position: sticky; top: 0; z-index: 100; display: flex; justify-content: flex-start; align-items: center; height: 68px; box-shadow: 0 4px 12px rgba(30,58,138,0.2); }
-        .back-btn, .menu-btn { background: none; border: none; color: #ffffff; font-size: 1.5rem; cursor: pointer; display: none; padding: 10px 15px 10px 0; }
+        /* App Header (White Theme) */
+        header { background: #ffffff; color: #0f172a; padding: 0 20px; font-size: 1.3rem; font-weight: 800; position: sticky; top: 0; z-index: 100; display: flex; justify-content: flex-start; align-items: center; height: 68px; border-bottom: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .back-btn, .menu-btn { background: none; border: none; color: #0f172a; font-size: 1.5rem; cursor: pointer; display: none; padding: 10px 15px 10px 0; }
         .menu-btn { display: flex; align-items: center; margin-right: 15px; }
         
         /* Header Actions & Share Button */
         .header-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
-        .share-btn { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .share-btn:active { background: rgba(255, 255, 255, 0.25); transform: scale(0.95); }
+        .share-btn { background: #f8fafc; border: 1.5px solid #cbd5e1; color: #0f172a; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .share-btn:active { background: #e2e8f0; transform: scale(0.95); }
         .share-btn svg { width: 18px; height: 18px; stroke-width: 2.2; }
 
         /* Deepak Animation */
@@ -175,14 +176,15 @@
         <div>कृपया प्रतीक्षा करें...</div>
     </div>
 
-    <!-- Professional Top-to-Bottom Login View -->
-    <div id="loginView" class="login-container">
+    <!-- Professional Top-to-Bottom Login View (Hidden by default to prevent flashing) -->
+    <div id="loginView" class="login-container hidden">
         <div class="login-top-section">
-            <h2>EMI Tracker Pro</h2>
+            <h2>EMI Tracker</h2>
             <p>Enter your mobile number to continue</p>
             <div class="form-group">
                 <label>Mobile Number</label>
-                <input type="tel" id="loginMobile" placeholder="e.g. 9876543210" maxlength="10">
+                <!-- autocomplete="tel" enables mobile keyboard auto-fetch suggestion -->
+                <input type="tel" id="loginMobile" placeholder="e.g. 9876543210" maxlength="10" autocomplete="tel">
             </div>
         </div>
         <div class="login-bottom-section">
@@ -299,7 +301,7 @@
         <div class="install-info">
             <div class="install-icon">EMI</div>
             <div class="install-text">
-                <strong>EMI Tracker Pro</strong>
+                <strong>EMI Tracker</strong>
                 <span>Fast, Offline, Secure</span>
             </div>
         </div>
@@ -333,19 +335,18 @@
     </div>
 
     <script>
-        // --- INLINE PWA GENERATOR (For Direct App Install Request on Localhost / Live servers) ---
+        // --- INLINE PWA GENERATOR (Professional White-Blue Logo & EMI Tracker Name) ---
         (function initPWA() {
             try {
-                // 1. Inject Manifest Dynamically
                 const manifest = {
-                    "name": "EMI Tracker Pro",
-                    "short_name": "EMI Pro",
+                    "name": "EMI Tracker",
+                    "short_name": "EMI Tracker",
                     "start_url": ".",
                     "display": "standalone",
                     "background_color": "#ffffff",
-                    "theme_color": "#1e3a8a",
+                    "theme_color": "#ffffff",
                     "icons": [{
-                        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzFlM2E4YSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjIwMCIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkVNSTwvdGV4dD48L3N2Zz4=",
+                        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0xMjAgMjU2TDMyMCAxMDBMMzIwIDQxMloiIGZpbGw9IiMxZTNhOGEiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNjAiIGZpbGw9IiMxZTNhOGEiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+RU1JPC90ZXh0Pjwvc3ZnPg==",
                         "sizes": "512x512",
                         "type": "image/svg+xml",
                         "purpose": "any maskable"
@@ -356,11 +357,10 @@
                 manifestTag.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
                 document.head.appendChild(manifestTag);
 
-                // 2. Inject Dummy Service Worker dynamically to bypass browser Install checks
                 if ('serviceWorker' in navigator) {
                     const swCode = `self.addEventListener('fetch', function(e) {});`;
                     const blob = new Blob([swCode], { type: 'text/javascript' });
-                    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW Registration fallback', err));
+                    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW fallback', err));
                 }
             } catch (e) {}
         })();
@@ -382,7 +382,7 @@
             loader.classList.toggle('show', show);
         }
 
-        // App Initialization
+        // App Initialization (Direct Dashboard login check)
         if (currentMobile) {
             startApp();
         } else {
@@ -398,17 +398,14 @@
         // Show install banner slightly after startup if not dismissed
         window.addEventListener('load', () => {
             setTimeout(() => {
-                if(!localStorage.getItem('install_dismissed')) {
-                    // Note: Browser will check manifest & SW logic injected above.
+                if(!localStorage.getItem('install_dismissed') && currentMobile) {
                     document.getElementById('installBanner').classList.add('show');
                 }
             }, 1800);
         });
 
-        // Universal Install Handler for all servers (Local & Live)
         function triggerUniversalInstall() {
             if (deferredPrompt) {
-                // Native System App Install Trigger
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
@@ -417,8 +414,7 @@
                     deferredPrompt = null;
                 });
             } else {
-                // Fallback instructions if native prompt is blocked by strict browser security policies
-                showAlert("Direct Install Guide", "Apne device me install karne ke liye browser ke menu (⋮) par click karein aur 'Install App' ya 'Add to Home Screen' select karein. App direct phone me aa jayega.");
+                showAlert("Direct Install Guide", "Apne device me install karne ke liye browser ke menu (⋮) par click karein aur 'Install App' ya 'Add to Home Screen' select karein.");
             }
         }
 
@@ -431,12 +427,11 @@
         function shareApp() {
             if (navigator.share) {
                 navigator.share({
-                    title: 'EMI Tracker Pro',
-                    text: 'Track your EMIs easily with EMI Tracker Pro! Secure, Fast and Simple.',
+                    title: 'EMI Tracker',
+                    text: 'Track your EMIs easily with EMI Tracker! Secure, Fast and Simple.',
                     url: window.location.href
                 }).catch((error) => console.log('Error sharing:', error));
             } else {
-                // Fallback for browsers that do not support native sharing
                 showAlert("Share App", "Your browser doesn't support direct sharing. You can copy the page URL to share it.");
             }
         }
@@ -460,6 +455,11 @@
                     currentMobile = mobile;
                     document.getElementById('loginView').classList.add('hidden');
                     startApp();
+                    
+                    // Show install banner after successful login if not dismissed
+                    if(!localStorage.getItem('install_dismissed')) {
+                        setTimeout(() => { document.getElementById('installBanner').classList.add('show'); }, 1500);
+                    }
                 } else {
                     showAlert("Error", data.message);
                 }
