@@ -149,23 +149,25 @@
             margin-bottom: 15px;
         }
 
-        /* Universal App Install Bottom Banner (Professional) */
+        /* Universal App Install Bottom Banner (Slide-up Pop-up Window Design) */
         .install-banner {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #0f172a; color: #ffffff; padding: 16px 20px;
+            background: #0f172a; color: #ffffff; padding: 22px 20px 28px 20px;
             display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 -8px 25px rgba(0,0,0,0.3); z-index: 4500;
-            border-top: 2px solid #1e3a8a; transform: translateY(110%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.4); z-index: 4500;
+            border-top: 3px solid #1e3a8a; 
+            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            transform: translateY(120%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .install-banner.show { transform: translateY(0); }
         .install-info { display: flex; align-items: center; gap: 14px; }
-        .install-icon { background: #1e3a8a; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 900; font-size: 1.15rem; letter-spacing: 1px; }
-        .install-text strong { display: block; font-size: 1.05rem; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
-        .install-text span { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
+        .install-icon { background: #1e3a8a; width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .install-text strong { display: block; font-size: 1.15rem; font-weight: 800; color: #ffffff; margin-bottom: 3px; }
+        .install-text span { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
         .install-actions { display: flex; gap: 10px; align-items: center; }
-        .install-btn { background: #059669; color: #ffffff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 12px rgba(5,150,105,0.4); }
-        .install-btn-later { background: #334155; color: #e2e8f0; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+        .install-btn { background: #059669; color: #ffffff; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(5,150,105,0.4); }
+        .install-btn-later { background: #334155; color: #e2e8f0; border: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -183,7 +185,6 @@
             <p>Enter your mobile number to continue</p>
             <div class="form-group">
                 <label>Mobile Number</label>
-                <!-- autocomplete="tel" enables mobile keyboard auto-fetch suggestion -->
                 <input type="tel" id="loginMobile" placeholder="e.g. 9876543210" maxlength="10" autocomplete="tel">
             </div>
         </div>
@@ -296,13 +297,13 @@
         </div>
     </div>
 
-    <!-- Professional App Install Bottom Banner -->
+    <!-- Professional App Install Slide-Up Pop-up Window -->
     <div id="installBanner" class="install-banner">
         <div class="install-info">
             <div class="install-icon">EMI</div>
             <div class="install-text">
                 <strong>EMI Tracker</strong>
-                <span>Fast, Offline, Secure</span>
+                <span>Install App to Home Screen</span>
             </div>
         </div>
         <div class="install-actions">
@@ -335,18 +336,17 @@
     </div>
 
     <script>
-        // --- INLINE PWA GENERATOR (Fixed for App Drawer Installation) ---
+        // --- INLINE PWA GENERATOR (Strict Config for Native App Drawer Installation) ---
         (function initPWA() {
             try {
                 // Generate Professional 'EMI' Logo in SVG
                 const svgIconBase64 = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzFlM2E4YSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTQlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjIyMCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMiI+RU1JPC90ZXh0Pjwvc3ZnPg==";
                 
-                // Absolute Path URL required for strict manifest validation
-                const currentUrl = window.location.pathname; 
+                // Using exact URL without queries to ensure strict match for standalone mode
+                const currentUrl = window.location.href.split('?')[0]; 
                 
-                // Chrome needs multiple size icons and id for proper App List integration
                 const manifest = {
-                    "id": "/emi-tracker-app/",
+                    "id": "com.emitracker.app",
                     "name": "EMI Tracker",
                     "short_name": "EMI Tracker",
                     "start_url": currentUrl,
@@ -354,18 +354,8 @@
                     "background_color": "#ffffff",
                     "theme_color": "#ffffff",
                     "icons": [
-                        {
-                            "src": "data:image/svg+xml;base64," + svgIconBase64,
-                            "sizes": "192x192",
-                            "type": "image/svg+xml",
-                            "purpose": "any maskable"
-                        },
-                        {
-                            "src": "data:image/svg+xml;base64," + svgIconBase64,
-                            "sizes": "512x512",
-                            "type": "image/svg+xml",
-                            "purpose": "any maskable"
-                        }
+                        { "src": "data:image/svg+xml;base64," + svgIconBase64, "sizes": "192x192", "type": "image/svg+xml", "purpose": "any maskable" },
+                        { "src": "data:image/svg+xml;base64," + svgIconBase64, "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
                     ]
                 };
                 
@@ -375,25 +365,18 @@
                 manifestTag.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
                 document.head.appendChild(manifestTag);
 
-                // Inject Inline Service Worker with fetch event (Required for native app list install in Android)
+                // Inject Inline Service Worker with fetch event (Required for native app list install in Chrome/Android)
                 if ('serviceWorker' in navigator) {
                     const swCode = `
                         self.addEventListener('install', e => self.skipWaiting());
                         self.addEventListener('activate', e => self.clients.claim());
-                        self.addEventListener('fetch', e => {
-                            // Empty fetch handles the requirement without breaking network requests
-                        });
+                        self.addEventListener('fetch', e => {}); 
                     `;
                     const blob = new Blob([swCode], { type: 'application/javascript' });
                     const swUrl = URL.createObjectURL(blob);
-                    
-                    navigator.serviceWorker.register(swUrl).catch(err => {
-                        console.log('SW fallback for local files', err);
-                    });
+                    navigator.serviceWorker.register(swUrl).catch(err => console.log('SW fallback', err));
                 }
-            } catch (e) {
-                console.error("PWA Init failed", e);
-            }
+            } catch (e) { console.error("PWA Init failed", e); }
         })();
         // -----------------------------------------------------------------------------------------
 
@@ -420,23 +403,23 @@
             document.getElementById('loginView').classList.remove('hidden');
         }
 
-        // Capture PWA Install prompt universally
+        // Capture Native PWA Install prompt
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-        });
-
-        // Show install banner slightly after startup if not dismissed
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                if(!localStorage.getItem('install_dismissed') && currentMobile) {
-                    document.getElementById('installBanner').classList.add('show');
-                }
-            }, 1800);
+            
+            // Agar user logged in hai aur usne popup dismiss nahi kiya hai, 
+            // tabhi slide-up window popup dikhega (smooth animation ke sath)
+            if(currentMobile && !localStorage.getItem('install_dismissed')) {
+                setTimeout(() => { 
+                    document.getElementById('installBanner').classList.add('show'); 
+                }, 1500); 
+            }
         });
 
         function triggerUniversalInstall() {
             if (deferredPrompt) {
+                // Shows the Native Android/Chrome Install Dialog
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
@@ -445,8 +428,8 @@
                     deferredPrompt = null;
                 });
             } else {
-                // Fallback for browsers
-                showAlert("Install App", "Please click the browser menu (⋮) and select 'Install App' or 'Add to Home Screen' to install this app.");
+                // Fallback instructions if API is blocked by browser restrictions
+                showAlert("Install App", "Please tap the browser menu (⋮) and select 'Install App' or 'Add to Home Screen' to add this to your app drawer.");
             }
         }
 
@@ -488,8 +471,8 @@
                     document.getElementById('loginView').classList.add('hidden');
                     startApp();
                     
-                    // Show install banner after successful login if not dismissed
-                    if(!localStorage.getItem('install_dismissed')) {
+                    // Trigger Slide-up popup window if prompt is available after login
+                    if(deferredPrompt && !localStorage.getItem('install_dismissed')) {
                         setTimeout(() => { document.getElementById('installBanner').classList.add('show'); }, 1500);
                     }
                 } else {
