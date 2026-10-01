@@ -149,28 +149,34 @@
             margin-bottom: 15px;
         }
 
-        /* NEW: Attractive Native Light-Theme Install Banner */
+        /* NEW: Attractive Native Light-Theme Install Banner (Bada & Professional) */
         .install-banner {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #ffffff; color: #0f172a; padding: 22px 20px 28px 20px;
-            display: flex; align-items: center; justify-content: space-between;
+            background: #ffffff; color: #0f172a; 
+            padding: 28px 24px 34px 24px; /* Thoda bada banaya gaya hai */
+            display: flex; flex-direction: column; /* Upar-Neeche layout */
             z-index: 6500; 
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15); /* Strong shadow floating effect */
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.15); 
             border-top: 1px solid #e2e8f0; 
-            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            border-top-left-radius: 28px; border-top-right-radius: 28px;
             transform: translateY(120%);
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .install-banner.show { transform: translateY(0); }
-        .install-info { display: flex; align-items: center; gap: 14px; }
-        .install-icon { background: #1e3a8a; width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 900; font-size: 1.25rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(30,58,138,0.25); }
-        .install-text strong { display: block; font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 3px; }
-        .install-text span { font-size: 0.9rem; color: #64748b; font-weight: 600; }
-        .install-actions { display: flex; gap: 10px; align-items: center; }
-        .install-btn { background: #059669; color: #ffffff; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(5,150,105,0.3); transition: transform 0.1s; }
-        .install-btn:active { transform: scale(0.95); }
-        .install-btn-later { background: #f1f5f9; color: #475569; border: none; padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
-        .install-btn-later:active { background: #e2e8f0; }
+        
+        /* Upar ka hissa (Icon + Text) */
+        .install-top { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; width: 100%; }
+        .install-icon { background: #1e3a8a; width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; box-shadow: 0 6px 15px rgba(30,58,138,0.25); flex-shrink: 0; }
+        .install-text { flex: 1; text-align: left; }
+        .install-text strong { display: block; font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+        .install-text span { font-size: 0.95rem; color: #64748b; font-weight: 600; line-height: 1.4; display: block; }
+        
+        /* Neeche ka hissa (Buttons) */
+        .install-bottom { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 15px; }
+        .install-btn { flex: 1; background: #059669; color: #ffffff; border: none; padding: 14px 20px; border-radius: 14px; font-weight: 800; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(5,150,105,0.3); transition: transform 0.1s; }
+        .install-btn:active { transform: scale(0.96); }
+        .install-btn-later { flex: 1; background: #f1f5f9; color: #475569; border: none; padding: 14px 20px; border-radius: 14px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: transform 0.1s; }
+        .install-btn-later:active { background: #e2e8f0; transform: scale(0.96); }
     </style>
 </head>
 <body>
@@ -300,18 +306,18 @@
         </div>
     </div>
 
-    <!-- Attractive Light-Theme App Install Bottom Banner -->
+    <!-- Attractive Light-Theme App Install Bottom Banner (Professional New Layout) -->
     <div id="installBanner" class="install-banner">
-        <div class="install-info">
+        <div class="install-top">
             <div class="install-icon">EMI</div>
             <div class="install-text">
                 <strong>EMI Tracker</strong>
-                <span>Install App to Home Screen</span>
+                <span>Install app to your Home Screen for faster and secure access</span>
             </div>
         </div>
-        <div class="install-actions">
+        <div class="install-bottom">
             <button class="install-btn-later" onclick="closeInstallBanner()">Later</button>
-            <button class="install-btn" id="realInstallBtn" onclick="triggerUniversalInstall()">Install</button>
+            <button class="install-btn" id="realInstallBtn" onclick="triggerUniversalInstall()">Install Now</button>
         </div>
     </div>
 
@@ -468,7 +474,7 @@
                     deferredPrompt = null;
                 });
             } else {
-                showAlert("Install Direct", "Native install is blocked. Open your browser menu (⋮) and tap 'Install App' or 'Add to Home Screen' to download the app.");
+                showAlert("Install Direct", "Native install is blocked on this browser. Open your browser menu (⋮) and tap 'Install App' or 'Add to Home Screen' to download the app.");
             }
         }
 
