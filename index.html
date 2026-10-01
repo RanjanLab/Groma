@@ -160,7 +160,7 @@
         }
         .install-banner.show { transform: translateY(0); }
         .install-info { display: flex; align-items: center; gap: 14px; }
-        .install-icon { background: #1e3a8a; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.25rem; }
+        .install-icon { background: #1e3a8a; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 900; font-size: 1.15rem; letter-spacing: 1px; }
         .install-text strong { display: block; font-size: 1.05rem; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
         .install-text span { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
         .install-actions { display: flex; gap: 10px; align-items: center; }
@@ -335,34 +335,62 @@
     </div>
 
     <script>
-        // --- INLINE PWA GENERATOR (Fixed for Installability) ---
+        // --- INLINE PWA GENERATOR (Fixed for App Drawer Installation) ---
         (function initPWA() {
             try {
-                // Fixed: start_url must be the absolute current URL for Data URI manifests to work properly in browsers
-                const currentUrl = window.location.href.split('?')[0]; 
+                // Generate Professional 'EMI' Logo in SVG
+                const svgIconBase64 = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzFlM2E4YSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTQlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjIyMCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMiI+RU1JPC90ZXh0Pjwvc3ZnPg==";
                 
+                // Absolute Path URL required for strict manifest validation
+                const currentUrl = window.location.pathname; 
+                
+                // Chrome needs multiple size icons and id for proper App List integration
                 const manifest = {
+                    "id": "/emi-tracker-app/",
                     "name": "EMI Tracker",
                     "short_name": "EMI Tracker",
                     "start_url": currentUrl,
                     "display": "standalone",
                     "background_color": "#ffffff",
                     "theme_color": "#ffffff",
-                    "icons": [{
-                        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI2ZmZmZmZiIvPjxwYXRoIGQ9Ik0xMjAgMjU2TDMyMCAxMDBMMzIwIDQxMloiIGZpbGw9IiMxZTNhOGEiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNjAiIGZpbGw9IiMxZTNhOGEiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+RU1JPC90ZXh0Pjwvc3ZnPg==",
-                        "sizes": "512x512",
-                        "type": "image/svg+xml",
-                        "purpose": "any maskable"
-                    }]
+                    "icons": [
+                        {
+                            "src": "data:image/svg+xml;base64," + svgIconBase64,
+                            "sizes": "192x192",
+                            "type": "image/svg+xml",
+                            "purpose": "any maskable"
+                        },
+                        {
+                            "src": "data:image/svg+xml;base64," + svgIconBase64,
+                            "sizes": "512x512",
+                            "type": "image/svg+xml",
+                            "purpose": "any maskable"
+                        }
+                    ]
                 };
+                
+                // Inject Manifest
                 const manifestTag = document.createElement('link');
                 manifestTag.rel = 'manifest';
                 manifestTag.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
                 document.head.appendChild(manifestTag);
 
-                // Note: The fake blob Service Worker has been removed because modern Chrome blocks blob-based 
-                // SWs for install prompts due to security policies. Just having a valid manifest is now 
-                // preferred by browsers for single-file web apps to trigger "Add to Home Screen".
+                // Inject Inline Service Worker with fetch event (Required for native app list install in Android)
+                if ('serviceWorker' in navigator) {
+                    const swCode = `
+                        self.addEventListener('install', e => self.skipWaiting());
+                        self.addEventListener('activate', e => self.clients.claim());
+                        self.addEventListener('fetch', e => {
+                            // Empty fetch handles the requirement without breaking network requests
+                        });
+                    `;
+                    const blob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(blob);
+                    
+                    navigator.serviceWorker.register(swUrl).catch(err => {
+                        console.log('SW fallback for local files', err);
+                    });
+                }
             } catch (e) {
                 console.error("PWA Init failed", e);
             }
@@ -417,8 +445,8 @@
                     deferredPrompt = null;
                 });
             } else {
-                // Fallback for Safari/iOS or browsers that block prompt API without a hosted sw.js
-                showAlert("Install Direct", "Apne phone me app install karne ke liye browser menu (⋮) par click karein aur 'Add to Home Screen' ya 'Install App' select karein.");
+                // Fallback for browsers
+                showAlert("Install App", "Please click the browser menu (⋮) and select 'Install App' or 'Add to Home Screen' to install this app.");
             }
         }
 
