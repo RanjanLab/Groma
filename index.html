@@ -335,13 +335,16 @@
     </div>
 
     <script>
-        // --- INLINE PWA GENERATOR (Professional White-Blue Logo & EMI Tracker Name) ---
+        // --- INLINE PWA GENERATOR (Fixed for Installability) ---
         (function initPWA() {
             try {
+                // Fixed: start_url must be the absolute current URL for Data URI manifests to work properly in browsers
+                const currentUrl = window.location.href.split('?')[0]; 
+                
                 const manifest = {
                     "name": "EMI Tracker",
                     "short_name": "EMI Tracker",
-                    "start_url": ".",
+                    "start_url": currentUrl,
                     "display": "standalone",
                     "background_color": "#ffffff",
                     "theme_color": "#ffffff",
@@ -357,12 +360,12 @@
                 manifestTag.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
                 document.head.appendChild(manifestTag);
 
-                if ('serviceWorker' in navigator) {
-                    const swCode = `self.addEventListener('fetch', function(e) {});`;
-                    const blob = new Blob([swCode], { type: 'text/javascript' });
-                    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW fallback', err));
-                }
-            } catch (e) {}
+                // Note: The fake blob Service Worker has been removed because modern Chrome blocks blob-based 
+                // SWs for install prompts due to security policies. Just having a valid manifest is now 
+                // preferred by browsers for single-file web apps to trigger "Add to Home Screen".
+            } catch (e) {
+                console.error("PWA Init failed", e);
+            }
         })();
         // -----------------------------------------------------------------------------------------
 
@@ -414,7 +417,8 @@
                     deferredPrompt = null;
                 });
             } else {
-                showAlert("Direct Install Guide", "Apne device me install karne ke liye browser ke menu (⋮) par click karein aur 'Install App' ya 'Add to Home Screen' select karein.");
+                // Fallback for Safari/iOS or browsers that block prompt API without a hosted sw.js
+                showAlert("Install Direct", "Apne phone me app install karne ke liye browser menu (⋮) par click karein aur 'Add to Home Screen' ya 'Install App' select karein.");
             }
         }
 
