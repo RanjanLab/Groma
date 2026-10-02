@@ -153,7 +153,7 @@
             margin-bottom: 15px;
         }
 
-        /* Attractive Native Light-Theme Install Banner (Bada & Professional) */
+        /* Attractive Native Light-Theme App Install Bottom Banner */
         .install-banner {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: #ffffff; color: #0f172a; 
@@ -245,7 +245,6 @@
 
         <!-- Dashboard View -->
         <div id="dashboardView" class="container">
-            <!-- Inline Spinner Appears Here While Fetching -->
             <div id="loanList"></div>
             <button class="fab" id="addEmiFab" onclick="showAddForm()">+</button>
         </div>
@@ -273,6 +272,7 @@
                     <label>EMI Cycle</label>
                     <select id="emiCycle">
                         <option value="Monthly">Monthly</option>
+                        <option value="Weekly">Weekly</option>
                     </select>
                 </div>
                 <button class="btn" onclick="saveLoanToSheet()">Save Details</button>
@@ -307,7 +307,7 @@
         </div>
     </div>
 
-    <!-- Attractive Light-Theme App Install Bottom Banner (Professional New Layout) -->
+    <!-- Attractive Light-Theme App Install Bottom Banner -->
     <div id="installBanner" class="install-banner">
         <div class="install-top">
             <div class="install-icon">EMI</div>
@@ -453,7 +453,6 @@
                 startApp();
             } else {
                 document.getElementById('loginView').classList.remove('hidden');
-                // Trigger the popup right on the Login Page if user is not logged in
                 showInstallPopupIfNeeded(); 
             }
         });
@@ -543,7 +542,6 @@
         function startApp() {
             document.getElementById('appView').classList.remove('hidden');
             
-            // Show Beautiful Inline Dashboard Spinner while initial fetching
             document.getElementById('loanList').innerHTML = `
                 <div class="dashboard-spinner-container">
                     <div class="dash-spinner"></div>
@@ -565,7 +563,7 @@
                 if(showSpinner) showLoader(false);
                 if(data.status === "success") {
                     loans = data.loans || [];
-                    renderDashboard(); // Spinner will be replaced by data
+                    renderDashboard();
                 }
             })
             .catch(err => {
@@ -650,6 +648,7 @@
             document.getElementById('emiAmount').value = '';
             document.getElementById('totalEmis').value = '';
             document.getElementById('startDate').value = '';
+            document.getElementById('emiCycle').value = 'Monthly';
             editingLoanId = null;
         }
 
@@ -662,6 +661,7 @@
                 document.getElementById('emiAmount').value = loan.emiAmount;
                 document.getElementById('totalEmis').value = loan.totalEmis;
                 document.getElementById('startDate').value = loan.startDate;
+                document.getElementById('emiCycle').value = loan.cycle || 'Monthly';
                 
                 document.getElementById('dashboardView').classList.add('hidden');
                 document.getElementById('addFormView').classList.remove('hidden');
@@ -695,6 +695,7 @@
             let amount = parseFloat(document.getElementById('emiAmount').value);
             let total = parseInt(document.getElementById('totalEmis').value);
             let start = document.getElementById('startDate').value;
+            let cycleVal = document.getElementById('emiCycle').value;
 
             if(!company || !amount || !total || !start) {
                 showAlert("Missing Details", "Please fill all fields.");
@@ -707,7 +708,7 @@
                 emiAmount: amount,
                 totalEmis: total,
                 startDate: start,
-                cycle: 'Monthly',
+                cycle: cycleVal,
                 paidInstallments: 0
             };
 
@@ -745,13 +746,14 @@
                 
                 let remaining = loan.totalEmis - loan.paidInstallments;
                 let progressPercent = (loan.paidInstallments / loan.totalEmis) * 100;
+                let cycleText = loan.cycle === 'Weekly' ? 'Week' : 'Month';
                 
                 card.innerHTML = `
                     <div class="card-header">
                         <div>
                             <div class="card-title">${loan.companyName}</div>
                             <div style="margin-top: 6px; color: #334155; font-size: 1.05rem; font-weight: 700;">
-                                EMI: <span style="font-size: 1.4rem; color: #059669; font-weight: 900;">₹${loan.emiAmount}</span>/Month
+                                EMI: <span style="font-size: 1.4rem; color: #059669; font-weight: 900;">₹${loan.emiAmount}</span>/${cycleText}
                             </div>
                         </div>
                         <div class="card-actions">
@@ -799,7 +801,13 @@
             for(let i = 1; i <= loan.totalEmis; i++) {
                 let isPaid = i <= loan.paidInstallments;
                 let emiDate = new Date(startDateObj);
-                emiDate.setMonth(emiDate.getMonth() + (i - 1));
+                
+                if (loan.cycle === 'Weekly') {
+                    emiDate.setDate(emiDate.getDate() + ((i - 1) * 7));
+                } else {
+                    emiDate.setMonth(emiDate.getMonth() + (i - 1));
+                }
+                
                 let dateString = emiDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
                 let row = document.createElement('div');
