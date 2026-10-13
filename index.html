@@ -349,7 +349,6 @@
         // --- 100% PERFECT PWA GENERATOR (Dynamically generates PNG icons required by Chrome for App Drawer) ---
         (function initPWA() {
             try {
-                // Generate strict base64 PNG icons dynamically to satisfy Chrome's App Drawer requirements
                 function createPngIcon(size) {
                     const canvas = document.createElement('canvas');
                     canvas.width = size; canvas.height = size;
@@ -369,7 +368,6 @@
                 const icon192 = createPngIcon(192);
                 const icon512 = createPngIcon(512);
                 
-                // Chrome WebAPK (App Drawer) requires strictly matched scope and start_url
                 const urlObj = new URL(window.location.href);
                 urlObj.search = ''; 
                 const startUrl = urlObj.href;
@@ -396,7 +394,6 @@
                 manifestTag.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
                 document.head.appendChild(manifestTag);
 
-                // Service Worker is still required for local install triggers
                 if ('serviceWorker' in navigator) {
                     const swCode = `
                         self.addEventListener('install', e => self.skipWaiting());
@@ -429,25 +426,21 @@
             loader.classList.toggle('show', show);
         }
 
-        // Check if App is already running in Standalone (Installed) mode
         function isAppInstalled() {
             return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         }
 
-        // Banner Pop-up Logic
         function showInstallPopupIfNeeded() {
-            // Agar app pehle se install ho chuki hai, toh banner nahi dikhana hai
             if (isAppInstalled()) return;
 
             if (!localStorage.getItem('install_dismissed')) {
                 setTimeout(() => { 
                     let banner = document.getElementById('installBanner');
                     if(banner) banner.classList.add('show'); 
-                }, 1000); // 1 second ke andar pop-up aayega
+                }, 1000);
             }
         }
 
-        // App Initialization
         window.addEventListener('load', () => {
             if (currentMobile) {
                 startApp();
@@ -457,7 +450,6 @@
             }
         });
 
-        // Store the native event if Chrome fires it
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -465,7 +457,6 @@
 
         function triggerUniversalInstall() {
             if (deferredPrompt) {
-                // Shows the Native Android/Chrome Install Dialog (Download/Install to App Drawer)
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
@@ -483,7 +474,6 @@
             localStorage.setItem('install_dismissed', 'true');
         }
 
-        // Native Share App Logic
         function shareApp() {
             if (navigator.share) {
                 navigator.share({
@@ -730,6 +720,17 @@
             });
         }
 
+        // Helper function to calculate specific EMI date based on index (1-based)
+        function getEmiDateString(loan, emiIndex) {
+            let emiDate = new Date(loan.startDate);
+            if (loan.cycle === 'Weekly') {
+                emiDate.setDate(emiDate.getDate() + ((emiIndex - 1) * 7));
+            } else {
+                emiDate.setMonth(emiDate.getMonth() + (emiIndex - 1));
+            }
+            return emiDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
         function renderDashboard() {
             let list = document.getElementById('loanList');
             list.innerHTML = '';
@@ -748,6 +749,15 @@
                 let progressPercent = (loan.paidInstallments / loan.totalEmis) * 100;
                 let cycleText = loan.cycle === 'Weekly' ? 'Week' : 'Month';
                 
+                // Last Paid Date Single Line below EMI Amount
+                let lastPaidDateHtml = '';
+                if (loan.paidInstallments > 0) {
+                    let lastPaidDateStr = getEmiDateString(loan, loan.paidInstallments);
+                    lastPaidDateHtml = `<div style="font-size: 0.85rem; color: #475569; font-weight: 700; margin-top: 4px;">Last Paid: <span style="color: #059669; font-weight: 800;">${lastPaidDateStr}</span></div>`;
+                } else {
+                    lastPaidDateHtml = `<div style="font-size: 0.85rem; color: #64748b; font-weight: 700; margin-top: 4px;">Last Paid: <span style="color: #dc2626; font-weight: 800;">None</span></div>`;
+                }
+
                 card.innerHTML = `
                     <div class="card-header">
                         <div>
@@ -755,6 +765,7 @@
                             <div style="margin-top: 6px; color: #334155; font-size: 1.05rem; font-weight: 700;">
                                 EMI: <span style="font-size: 1.4rem; color: #059669; font-weight: 900;">₹${loan.emiAmount}</span>/${cycleText}
                             </div>
+                            ${lastPaidDateHtml}
                         </div>
                         <div class="card-actions">
                             <button class="action-btn edit" onclick="editLoan('${loan.id}', event)">
@@ -797,18 +808,9 @@
             let list = document.getElementById('emiScheduleList');
             list.innerHTML = '';
 
-            let startDateObj = new Date(loan.startDate);
             for(let i = 1; i <= loan.totalEmis; i++) {
                 let isPaid = i <= loan.paidInstallments;
-                let emiDate = new Date(startDateObj);
-                
-                if (loan.cycle === 'Weekly') {
-                    emiDate.setDate(emiDate.getDate() + ((i - 1) * 7));
-                } else {
-                    emiDate.setMonth(emiDate.getMonth() + (i - 1));
-                }
-                
-                let dateString = emiDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                let dateString = getEmiDateString(loan, i);
 
                 let row = document.createElement('div');
                 row.className = `emi-row ${isPaid ? 'paid' : 'unpaid'}`;
