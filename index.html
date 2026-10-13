@@ -206,14 +206,14 @@
     <div id="appView" class="hidden">
         <header>
             <button class="menu-btn" id="menuBtn" onclick="toggleDrawer()">☰</button>
-            <button class="back-btn" id="backBtn" onclick="showDashboard()">❮</button>
+            <button class="back-btn" id="backBtn" onclick="history.back()">❮</button>
             <span id="headerTitle">My EMIs</span>
             
             <div class="header-actions">
                 <!-- Native Mobile Share Button -->
                 <button class="share-btn" onclick="shareApp()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684Z" />
                     </svg>
                     Share
                 </button>
@@ -246,7 +246,7 @@
         <!-- Dashboard View -->
         <div id="dashboardView" class="container">
             <div id="loanList"></div>
-            <button class="fab" id="addEmiFab" onclick="showAddForm()">+</button>
+            <button class="fab" id="addEmiFab" onclick="navigateTo('add')">+</button>
         </div>
 
         <!-- Add/Edit Loan Form -->
@@ -276,7 +276,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="saveLoanToSheet()">Save Details</button>
-                <button class="btn btn-cancel" onclick="showDashboard()">Cancel</button>
+                <button class="btn btn-cancel" onclick="history.back()">Cancel</button>
             </div>
         </div>
 
@@ -346,7 +346,7 @@
     </div>
 
     <script>
-        // --- 100% PERFECT PWA GENERATOR (Dynamically generates PNG icons required by Chrome for App Drawer) ---
+        // --- 100% PERFECT PWA GENERATOR ---
         (function initPWA() {
             try {
                 function createPngIcon(size) {
@@ -410,7 +410,6 @@
         })();
         // -----------------------------------------------------------------------------------------
 
-        // GOOGLE APPS SCRIPT DEPLOYED WEB APP URL
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzb7LE4s3p1M9e0IGXBuo_9SCiz4BaQca5TwD_QqWs9OIwkUVYymWf_anZ8iCn8yLWy/exec";
 
         let currentMobile = localStorage.getItem('emi_mobile') || null;
@@ -432,7 +431,6 @@
 
         function showInstallPopupIfNeeded() {
             if (isAppInstalled()) return;
-
             if (!localStorage.getItem('install_dismissed')) {
                 setTimeout(() => { 
                     let banner = document.getElementById('installBanner');
@@ -442,6 +440,9 @@
         }
 
         window.addEventListener('load', () => {
+            // Initialize History State for Back Button handling
+            history.replaceState({ view: 'dashboard' }, '');
+
             if (currentMobile) {
                 startApp();
             } else {
@@ -449,6 +450,32 @@
                 showInstallPopupIfNeeded(); 
             }
         });
+
+        // --- NATIVE BACK BUTTON / BROWSER HISTORY HANDLER ---
+        window.addEventListener('popstate', (event) => {
+            let state = event.state;
+            if (state && state.view === 'detail') {
+                showDetailViewInternal(state.loanId, false);
+            } else if (state && state.view === 'add') {
+                showAddFormInternal(false);
+            } else {
+                showDashboardInternal(false);
+            }
+        });
+
+        function navigateTo(viewType, param = null) {
+            if (viewType === 'dashboard') {
+                history.pushState({ view: 'dashboard' }, '');
+                showDashboardInternal(false);
+            } else if (viewType === 'add') {
+                history.pushState({ view: 'add' }, '');
+                showAddFormInternal(false);
+            } else if (viewType === 'detail') {
+                history.pushState({ view: 'detail', loanId: param }, '');
+                showDetailViewInternal(param, false);
+            }
+        }
+        // ----------------------------------------------------
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -593,7 +620,13 @@
             closeDialog();
         }
 
-        function showDashboard() {
+        // View Switchers
+        function showDashboard() { navigateTo('dashboard'); }
+        function showAddForm() { navigateTo('add'); }
+        function showDetailView(loanId) { navigateTo('detail', loanId); }
+
+        function showDashboardInternal(updateHistory = true) {
+            if(updateHistory) history.pushState({ view: 'dashboard' }, '');
             document.getElementById('dashboardView').classList.remove('hidden');
             document.getElementById('addFormView').classList.add('hidden');
             document.getElementById('detailView').classList.add('hidden');
@@ -606,19 +639,21 @@
             renderDashboard();
         }
 
-        function showAddForm() {
+        function showAddFormInternal(updateHistory = true) {
+            if(updateHistory) history.pushState({ view: 'add' }, '');
             document.getElementById('dashboardView').classList.add('hidden');
             document.getElementById('addFormView').classList.remove('hidden');
             document.getElementById('detailView').classList.add('hidden');
             document.getElementById('menuBtn').style.display = 'none';
             document.getElementById('backBtn').style.display = 'block';
-            document.getElementById('headerTitle').innerText = 'Add New EMI';
+            document.getElementById('headerTitle').innerText = editingLoanId ? 'Edit EMI Details' : 'Add New EMI';
             document.getElementById('addEmiFab').style.display = 'none';
             window.scrollTo(0, 0);
-            clearForm();
+            if(!editingLoanId) clearForm();
         }
 
-        function showDetailView(loanId) {
+        function showDetailViewInternal(loanId, updateHistory = true) {
+            if(updateHistory) history.pushState({ view: 'detail', loanId: loanId }, '');
             currentActiveLoanId = loanId;
             document.getElementById('dashboardView').classList.add('hidden');
             document.getElementById('addFormView').classList.add('hidden');
@@ -629,8 +664,10 @@
             window.scrollTo(0, 0);
             
             let loan = loans.find(l => l.id === loanId);
-            document.getElementById('headerTitle').innerText = loan.companyName;
-            setTimeout(() => { renderLoanDetails(loan); }, 50);
+            if(loan) {
+                document.getElementById('headerTitle').innerText = loan.companyName;
+                setTimeout(() => { renderLoanDetails(loan); }, 50);
+            }
         }
 
         function clearForm() {
@@ -653,13 +690,7 @@
                 document.getElementById('startDate').value = loan.startDate;
                 document.getElementById('emiCycle').value = loan.cycle || 'Monthly';
                 
-                document.getElementById('dashboardView').classList.add('hidden');
-                document.getElementById('addFormView').classList.remove('hidden');
-                document.getElementById('menuBtn').style.display = 'none';
-                document.getElementById('backBtn').style.display = 'block';
-                document.getElementById('headerTitle').innerText = 'Edit EMI Details';
-                document.getElementById('addEmiFab').style.display = 'none';
-                window.scrollTo(0, 0);
+                showAddForm();
             }
         }
 
@@ -716,7 +747,7 @@
             .then(data => {
                 showLoader(false);
                 fetchLoansFromSheet(false);
-                showDashboard();
+                history.back(); // Go back smoothly after saving
             });
         }
 
